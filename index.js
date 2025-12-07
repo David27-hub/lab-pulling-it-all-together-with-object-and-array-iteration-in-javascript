@@ -114,3 +114,82 @@ function gameObject() {
         },
     };
 }
+// ---helper function to find player by name---
+function getPlayerStatsFromNme(playerName) {
+    const game = gameObject();
+    // check home team
+    if (game.home.players[playerName]) {
+        return game.home.players[playerName];
+    }
+    // check away team
+    if(game.away.players[playerName]){
+        return game.away.players[playerName];
+    }
+    return null;
+}
+// retrive player information
+function numPointsScored(playerName) {
+    const playerStats = getPlayerStatsFromNme(playerName);
+    return playerStats ? playerStats.points : 0;
+}
+
+function shoeSize(playerName) {
+    const playerStats = getPlayerStatsFromNme(playerName);
+    return playerStats ? playerStats.shoe : 0;
+}
+
+function teamColors(teamName) {
+    const game = gameObject();
+    if (game.home.teamName === teamName) {
+        return game.home.colors;
+    } else if (game.away.teamName === teamName) {
+        return game.away.colors;
+    }
+    return [];  
+}
+function playerNumbers(teamName) {
+    const game = gameObject();
+    let teamPlayers;
+
+    if (game.home.teamName === teamName) {
+        teamPlayers = game.home.players;
+    } else if (game.away && game.away.teamName === teamName) {
+        teamPlayers = game.away.players;
+    } else {
+        return [];
+    }
+    return Object.values(teamPlayers).map(player => player.number);
+}
+function playerStats(playerName) {
+    return getPlayerStatsFromNme(playerName);
+}
+function teamNames() {
+    const game = gameObject();
+    const names = [game.home.teamName];
+    if (game.away){
+        names.push(game.away.teamName);
+    }
+    return names;
+}
+function bigShoeRebounds() {
+    const game = gameObject();
+    const allPlayersWithNames = [
+        ...Object.keys(game.home.players).map(name => ({ name, ...game.home.players[name] })),
+    ];
+    allPlayersWithNames.sort((a, b) => b.shoe - a.shoe);
+
+    if(allPlayersWithNames.length > 0){
+        return allPlayersWithNames[0].rebounds;
+    }
+    return 0;
+}
+module.exports = {
+    gameObject,
+    numPointsScored,
+    shoeSize,
+    teamColors,
+    teamNames,
+    playerNumbers,
+    playerStats,
+    bigShoeRebounds
+};
