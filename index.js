@@ -56,23 +56,40 @@ function playerStats(playerName) {
   }
 }
 
-function bigShoeRebounds() {
+ function bigShoeRebounds() {
   const game = gameObject();
-  let biggestShoe = 0;
-  let rebounds = 0;
+  let allPlayersWithNames = [];
 
-  for (let team in game) {
-    for (let player in game[team].players) {
-      const currentPlayer = game[team].players[player];
-      if (currentPlayer.shoe > biggestShoe) {
-        biggestShoe = currentPlayer.shoe;
-        rebounds = currentPlayer.rebounds;
-      }
+  // Collect all players with their stats
+  for (let teamKey in game) {
+    const team = game[teamKey];
+    for (let playerName in team.players) {
+      const player = team.players[playerName];
+      allPlayersWithNames.push({
+        name: playerName,
+        number: player.number,
+        shoe: player.shoe,
+        points: player.points,
+        rebounds: player.rebounds,
+        assists: player.assists,
+        steals: player.steals,
+        blocks: player.blocks,
+        slamDunks: player.slamDunks
+      });
     }
   }
 
-  return rebounds;
+  // Find player with biggest shoe
+  let biggestShoePlayer = allPlayersWithNames[0];
+  for (let player of allPlayersWithNames) {
+    if (player.shoe > biggestShoePlayer.shoe) {
+      biggestShoePlayer = player;
+    }
+  }
+
+  return biggestShoePlayer.rebounds;
 }
+
 
 
 function gameObject() {
@@ -101,6 +118,7 @@ function gameObject() {
                     blocks: 12,
                     slamDunks: 7,
                 },
+
                 "Brook Lopez": {
                     number: 11,
                     shoe: 17,
@@ -251,7 +269,8 @@ function teamNames() {
 function bigShoeRebounds() {
     const game = gameObject();
     const allPlayersWithNames = [
-        ...Object.keys(game.home.players).map(name => ({ name, ...game.home.players[name] })),
+        ...Object.keys(game.home.players).map(name => Object.assign({ name }, game.home.players[name]))
+
     ];
     allPlayersWithNames.sort((a, b) => b.shoe - a.shoe);
 
